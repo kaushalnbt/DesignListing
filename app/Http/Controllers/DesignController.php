@@ -21,7 +21,7 @@ class DesignController extends Controller
             $designs = Design::all();
             return $this->apiResponse->sendResponse(200, "Designs fetched successfully!", $designs);
         } catch (\Exception $e) {
-            return $this->apiResponse->sendResponse(500, "An error occurred while fetching designs.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -38,7 +38,7 @@ class DesignController extends Controller
             return $this->apiResponse->sendResponse(201, "Design created successfully!", $design);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while creating the design.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -47,7 +47,7 @@ class DesignController extends Controller
         try {
             return $this->apiResponse->sendResponse(200, "Design fetched successfully!", $design);
         } catch (\Exception $e) {
-            return $this->apiResponse->sendResponse(500, "An error occurred while fetching the design.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -64,7 +64,7 @@ class DesignController extends Controller
             return $this->apiResponse->sendResponse(200, "Design updated successfully!", $design);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while updating the design.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -77,7 +77,7 @@ class DesignController extends Controller
             return $this->apiResponse->sendResponse(204, "Design deleted successfully!", null);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while deleting the design.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 }
