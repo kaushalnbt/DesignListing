@@ -21,7 +21,7 @@ class FinishController extends Controller
             $finishes = Finish::all();
             return $this->apiResponse->sendResponse(200, "Finishes fetched successfully!", $finishes);
         } catch (\Exception $e) {
-            return $this->apiResponse->sendResponse(500, "An error occurred while fetching finishes.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -38,7 +38,7 @@ class FinishController extends Controller
             return $this->apiResponse->sendResponse(201, "Finish created successfully!", $finish);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while creating the finish.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -47,7 +47,7 @@ class FinishController extends Controller
         try {
             return $this->apiResponse->sendResponse(200, "Finish fetched successfully!", $finish);
         } catch (\Exception $e) {
-            return $this->apiResponse->sendResponse(500, "An error occurred while fetching the finish.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -64,7 +64,7 @@ class FinishController extends Controller
             return $this->apiResponse->sendResponse(200, "Finish updated successfully!", $finish);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while updating the finish.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -77,7 +77,7 @@ class FinishController extends Controller
             return $this->apiResponse->sendResponse(204, "Finish deleted successfully!", null);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while deleting the finish.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SizeController extends Controller
 {
@@ -16,8 +17,12 @@ class SizeController extends Controller
 
     public function index()
     {
-        $sizes = Size::all();
-        return $this->apiResponse->sendResponse(200, "Sizes fetched successfully!", $sizes);
+        try {
+            $sizes = Size::all();
+            return $this->apiResponse->sendResponse(200, "Sizes fetched successfully!", $sizes);
+        } catch (\Exception $e) {
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function store(Request $request)
@@ -26,14 +31,24 @@ class SizeController extends Controller
             'name' => 'required|string|unique:sizes,name',
         ]);
 
-        $size = Size::create($request->all());
-
-        return $this->apiResponse->sendResponse(201, "Size created successfully!", $size);
+        DB::beginTransaction();
+        try {
+            $size = Size::create($request->all());
+            DB::commit();
+            return $this->apiResponse->sendResponse(201, "Size created successfully!", $size);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function show(Size $size)
     {
-        return $this->apiResponse->sendResponse(200, "Size fetched successfully!", $size);
+        try {
+            return $this->apiResponse->sendResponse(200, "Size fetched successfully!", $size);
+        } catch (\Exception $e) {
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function update(Request $request, Size $size)
@@ -42,14 +57,27 @@ class SizeController extends Controller
             'name' => 'required|string|unique:sizes,name,' . $size->id,
         ]);
 
-        $size->update($request->all());
-
-        return $this->apiResponse->sendResponse(200, "Size updated successfully!", $size);
+        DB::beginTransaction();
+        try {
+            $size->update($request->all());
+            DB::commit();
+            return $this->apiResponse->sendResponse(200, "Size updated successfully!", $size);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function destroy(Size $size)
     {
-        $size->delete();
-        return $this->apiResponse->sendResponse(204, "Size deleted successfully!", null);
+        DB::beginTransaction();
+        try {
+            $size->delete();
+            DB::commit();
+            return $this->apiResponse->sendResponse(204, "Size deleted successfully!", null);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 }

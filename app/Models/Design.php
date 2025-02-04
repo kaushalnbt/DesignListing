@@ -19,4 +19,9 @@ class Design extends Model
     {
         return $this->belongsToMany(Finish::class, 'design_size_finish');
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'design_size_finish');
+    }
 }

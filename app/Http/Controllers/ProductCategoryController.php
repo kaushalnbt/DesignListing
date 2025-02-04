@@ -21,7 +21,7 @@ class ProductCategoryController extends Controller
             $categories = ProductCategory::all();
             return $this->apiResponse->sendResponse(200, "Product categories fetched successfully!", $categories);
         } catch (\Exception $e) {
-            return $this->apiResponse->sendResponse(500, "An error occurred while fetching product categories.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -38,7 +38,7 @@ class ProductCategoryController extends Controller
             return $this->apiResponse->sendResponse(201, "Product category created successfully!", $category);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while creating the product category.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -47,7 +47,7 @@ class ProductCategoryController extends Controller
         try {
             return $this->apiResponse->sendResponse(200, "Product category fetched successfully!", $productCategory);
         } catch (\Exception $e) {
-            return $this->apiResponse->sendResponse(500, "An error occurred while fetching the product category.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -64,7 +64,7 @@ class ProductCategoryController extends Controller
             return $this->apiResponse->sendResponse(200, "Product category updated successfully!", $productCategory);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while updating the product category.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 
@@ -77,7 +77,7 @@ class ProductCategoryController extends Controller
             return $this->apiResponse->sendResponse(204, "Product category deleted successfully!", null);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->apiResponse->sendResponse(500, "An error occurred while deleting the product category.", null);
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
         }
     }
 }

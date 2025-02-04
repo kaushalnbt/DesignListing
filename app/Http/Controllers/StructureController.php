@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Structure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StructureController extends Controller
 {
@@ -16,8 +17,12 @@ class StructureController extends Controller
 
     public function index()
     {
-        $structures = Structure::all();
-        return $this->apiResponse->sendResponse(200, "Structures fetched successfully!", $structures);
+        try {
+            $structures = Structure::all();
+            return $this->apiResponse->sendResponse(200, "Structures fetched successfully!", $structures);
+        } catch (\Exception $e) {
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function store(Request $request)
@@ -26,14 +31,24 @@ class StructureController extends Controller
             'name' => 'required|string|unique:structures,name',
         ]);
 
-        $structure = Structure::create($request->all());
-
-        return $this->apiResponse->sendResponse(201, "Structure created successfully!", $structure);
+        DB::beginTransaction();
+        try {
+            $structure = Structure::create($request->all());
+            DB::commit();
+            return $this->apiResponse->sendResponse(201, "Structure created successfully!", $structure);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function show(Structure $structure)
     {
-        return $this->apiResponse->sendResponse(200, "Structure fetched successfully!", $structure);
+        try {
+            return $this->apiResponse->sendResponse(200, "Structure fetched successfully!", $structure);
+        } catch (\Exception $e) {
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function update(Request $request, Structure $structure)
@@ -42,14 +57,27 @@ class StructureController extends Controller
             'name' => 'required|string|unique:structures,name,' . $structure->id,
         ]);
 
-        $structure->update($request->all());
-
-        return $this->apiResponse->sendResponse(200, "Structure updated successfully!", $structure);
+        DB::beginTransaction();
+        try {
+            $structure->update($request->all());
+            DB::commit();
+            return $this->apiResponse->sendResponse(200, "Structure updated successfully!", $structure);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 
     public function destroy(Structure $structure)
     {
-        $structure->delete();
-        return $this->apiResponse->sendResponse(204, "Structure deleted successfully!", null);
+        DB::beginTransaction();
+        try {
+            $structure->delete();
+            DB::commit();
+            return $this->apiResponse->sendResponse(204, "Structure deleted successfully!", null);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
+        }
     }
 }
