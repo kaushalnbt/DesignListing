@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductCategoryController extends Controller
 {
@@ -16,8 +17,12 @@ class ProductCategoryController extends Controller
 
     public function index()
     {
-        $categories = ProductCategory::all();
-        return $this->apiResponse->sendResponse(200, "Product categories fetched successfully!", $categories);
+        try {
+            $categories = ProductCategory::all();
+            return $this->apiResponse->sendResponse(200, "Product categories fetched successfully!", $categories);
+        } catch (\Exception $e) {
+            return $this->apiResponse->sendResponse(500, "An error occurred while fetching product categories.", null);
+        }
     }
 
     public function store(Request $request)
@@ -26,14 +31,24 @@ class ProductCategoryController extends Controller
             'name' => 'required|string|unique:product_categories,name',
         ]);
 
-        $category = ProductCategory::create($request->all());
-
-        return $this->apiResponse->sendResponse(201, "Product category created successfully!", $category);
+        DB::beginTransaction();
+        try {
+            $category = ProductCategory::create($request->all());
+            DB::commit();
+            return $this->apiResponse->sendResponse(201, "Product category created successfully!", $category);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, "An error occurred while creating the product category.", null);
+        }
     }
 
     public function show(ProductCategory $productCategory)
     {
-        return $this->apiResponse->sendResponse(200, "Product category fetched successfully!", $productCategory);
+        try {
+            return $this->apiResponse->sendResponse(200, "Product category fetched successfully!", $productCategory);
+        } catch (\Exception $e) {
+            return $this->apiResponse->sendResponse(500, "An error occurred while fetching the product category.", null);
+        }
     }
 
     public function update(Request $request, ProductCategory $productCategory)
@@ -42,14 +57,27 @@ class ProductCategoryController extends Controller
             'name' => 'required|string|unique:product_categories,name,' . $productCategory->id,
         ]);
 
-        $productCategory->update($request->all());
-
-        return $this->apiResponse->sendResponse(200, "Product category updated successfully!", $productCategory);
+        DB::beginTransaction();
+        try {
+            $productCategory->update($request->all());
+            DB::commit();
+            return $this->apiResponse->sendResponse(200, "Product category updated successfully!", $productCategory);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, "An error occurred while updating the product category.", null);
+        }
     }
 
     public function destroy(ProductCategory $productCategory)
     {
-        $productCategory->delete();
-        return $this->apiResponse->sendResponse(204, "Product category deleted successfully!", null);
+        DB::beginTransaction();
+        try {
+            $productCategory->delete();
+            DB::commit();
+            return $this->apiResponse->sendResponse(204, "Product category deleted successfully!", null);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, "An error occurred while deleting the product category.", null);
+        }
     }
 }

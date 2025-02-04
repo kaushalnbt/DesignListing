@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Color;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ColorController extends Controller
 {
@@ -16,8 +17,12 @@ class ColorController extends Controller
 
     public function index()
     {
-        $colors = Color::all();
-        return $this->apiResponse->sendResponse(200, "Colors fetched successfully!", $colors);
+        try {
+            $colors = Color::all();
+            return $this->apiResponse->sendResponse(200, "Colors fetched successfully!", $colors);
+        } catch (\Exception $e) {
+            return $this->apiResponse->sendResponse(500, "An error occurred while fetching colors.", null);
+        }
     }
 
     public function store(Request $request)
@@ -26,14 +31,24 @@ class ColorController extends Controller
             'name' => 'required|string|unique:colors,name',
         ]);
 
-        $color = Color::create($request->all());
-
-        return $this->apiResponse->sendResponse(201, "Color created successfully!", $color);
+        DB::beginTransaction();
+        try {
+            $color = Color::create($request->all());
+            DB::commit();
+            return $this->apiResponse->sendResponse(201, "Color created successfully!", $color);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, "An error occurred while creating the color.", null);
+        }
     }
 
     public function show(Color $color)
     {
-        return $this->apiResponse->sendResponse(200, "Color fetched successfully!", $color);
+        try {
+            return $this->apiResponse->sendResponse(200, "Color fetched successfully!", $color);
+        } catch (\Exception $e) {
+            return $this->apiResponse->sendResponse(500, "An error occurred while fetching the color.", null);
+        }
     }
 
     public function update(Request $request, Color $color)
@@ -42,14 +57,27 @@ class ColorController extends Controller
             'name' => 'required|string|unique:colors,name,' . $color->id,
         ]);
 
-        $color->update($request->all());
-
-        return $this->apiResponse->sendResponse(200, "Color updated successfully!", $color);
+        DB::beginTransaction();
+        try {
+            $color->update($request->all());
+            DB::commit();
+            return $this->apiResponse->sendResponse(200, "Color updated successfully!", $color);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, "An error occurred while updating the color.", null);
+        }
     }
 
     public function destroy(Color $color)
     {
-        $color->delete();
-        return $this->apiResponse->sendResponse(204, "Color deleted successfully!", null);
+        DB::beginTransaction();
+        try {
+            $color->delete();
+            DB::commit();
+            return $this->apiResponse->sendResponse(204, "Color deleted successfully!", null);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->apiResponse->sendResponse(500, "An error occurred while deleting the color.", null);
+        }
     }
 }
