@@ -17,16 +17,16 @@ class Product extends Model
 
     public function finishes()
     {
-        return $this->belongsToMany(Finish::class, 'product_finish');
+        return $this->belongsToMany(Finish::class);
     }
 
     public function sizes()
     {
-        return $this->belongsToMany(Size::class, 'product_size');
+        return $this->belongsToMany(Size::class);
     }
 
     public function designs()
     {
-        return $this->belongsToMany(Design::class, 'design_size_finish');
+        return $this->belongsToMany(Design::class);
     }
 }
