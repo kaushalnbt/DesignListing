@@ -9,6 +9,8 @@ use App\Http\Controllers\FinishController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,7 +34,18 @@ Route::apiResource('finishes', FinishController::class);
 Route::apiResource('designs', DesignController::class);
 Route::apiResource('colors', ColorController::class);
 Route::apiResource('products', ProductController::class);
+Route::apiResource('users', UserController::class);
 
 // Additional routes for import and export
 Route::post('products/import', [ProductController::class, 'import']);
 Route::get('products/export', [ProductController::class, 'export']);
+
+// Authentication routes
+Route::post('login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('user', [AuthController::class, 'user']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+});
