@@ -43,6 +43,7 @@ Route::get('products/export', [ProductController::class, 'export']);
 // Authentication routes
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
+Route::post('check-auth', [AuthController::class, 'check_auth']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('user', [AuthController::class, 'user']);
