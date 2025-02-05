@@ -41,4 +41,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isGod()
+    {
+        return in_array($this->id, config('constants.auth.god_user'));
+    }
 }
