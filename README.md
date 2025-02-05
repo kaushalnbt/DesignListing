@@ -9,6 +9,7 @@ Design Listing is a web application for managing and filtering products based on
 - Many-to-many relationships between products, sizes, finishes, and designs
 - Bulk import/export functionality
 - Admin panel for managing data
+- Authentication and authorization
 
 ## Table of Contents
 
@@ -106,6 +107,15 @@ The application supports dynamic filtering based on selected attributes. For exa
 You can import and export products in JSON or CSV format using the provided API endpoints.
 
 ## API Endpoints
+
+### Authentication
+
+- `POST /api/login`: Login and get an access token.
+- `POST /api/register`: Register a new user.
+- `GET /api/user`: Get the authenticated user's details.
+- `POST /api/logout`: Logout the authenticated user.
+- `POST /api/refresh`: Refresh the access token.
+- `POST /api/check-auth`: Check if the user is authenticated.
 
 ### Products
 
