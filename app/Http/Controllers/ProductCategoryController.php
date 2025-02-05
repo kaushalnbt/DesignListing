@@ -15,10 +15,16 @@ class ProductCategoryController extends Controller
         $this->apiResponse = $apiResponse;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $categories = ProductCategory::all();
+            $query = ProductCategory::query();
+
+            if ($request->has('parent_id')) {
+                $query->where('parent_id', $request->input('parent_id'));
+            }
+
+            $categories = $query->get();
             return $this->apiResponse->sendResponse(200, "Product categories fetched successfully!", $categories);
         } catch (\Exception $e) {
             return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());

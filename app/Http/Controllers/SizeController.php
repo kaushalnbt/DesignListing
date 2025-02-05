@@ -15,10 +15,18 @@ class SizeController extends Controller
         $this->apiResponse = $apiResponse;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $sizes = Size::all();
+            $query = Size::query();
+
+            if ($request->has('finish_id')) {
+                $query->whereHas('finishes', function ($q) use ($request) {
+                    $q->where('finish_id', $request->input('finish_id'));
+                });
+            }
+
+            $sizes = $query->get();
             return $this->apiResponse->sendResponse(200, "Sizes fetched successfully!", $sizes);
         } catch (\Exception $e) {
             return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());

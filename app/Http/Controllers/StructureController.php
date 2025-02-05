@@ -15,10 +15,16 @@ class StructureController extends Controller
         $this->apiResponse = $apiResponse;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $structures = Structure::all();
+            $query = Structure::query();
+
+            if ($request->has('product_category_id')) {
+                $query->where('product_category_id', $request->input('product_category_id'));
+            }
+
+            $structures = $query->get();
             return $this->apiResponse->sendResponse(200, "Structures fetched successfully!", $structures);
         } catch (\Exception $e) {
             return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());

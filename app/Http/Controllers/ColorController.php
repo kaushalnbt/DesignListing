@@ -15,10 +15,18 @@ class ColorController extends Controller
         $this->apiResponse = $apiResponse;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $colors = Color::all();
+            $query = Color::query();
+
+            if ($request->has('product_category_id')) {
+                $query->whereHas('productCategories', function ($q) use ($request) {
+                    $q->where('product_category_id', $request->input('product_category_id'));
+                });
+            }
+
+            $colors = $query->get();
             return $this->apiResponse->sendResponse(200, "Colors fetched successfully!", $colors);
         } catch (\Exception $e) {
             return $this->apiResponse->sendResponse(500, "An error occurred while fetching colors.", null);

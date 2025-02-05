@@ -15,10 +15,28 @@ class ProductController extends Controller
         $this->apiResponse = $apiResponse;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $products = Product::with(['category', 'sizes', 'finishes', 'designs'])->get();
+            $query = Product::with(['category', 'sizes', 'finishes', 'designs']);
+
+            if ($request->has('product_category_id')) {
+                $query->where('category_id', $request->input('product_category_id'));
+            }
+
+            if ($request->has('finish_id')) {
+                $query->whereHas('finishes', function ($q) use ($request) {
+                    $q->where('finish_id', $request->input('finish_id'));
+                });
+            }
+
+            if ($request->has('size_id')) {
+                $query->whereHas('sizes', function ($q) use ($request) {
+                    $q->where('size_id', $request->input('size_id'));
+                });
+            }
+
+            $products = $query->get();
             return $this->apiResponse->sendResponse(200, "Products fetched successfully!", $products);
         } catch (\Exception $e) {
             return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
@@ -123,6 +141,12 @@ class ProductController extends Controller
                     $finishIds = Finish::whereIn('name', $item['finishes'])->pluck('id')->toArray();
                     $product->finishes()->attach($finishIds);
                 }
+
+                // Attach designs (if provided)
+                if (!empty($item['designs'])) {
+                    $designIds = Design::whereIn('name', $item['designs'])->pluck('id')->toArray();
+                    $product->designs()->attach($designIds);
+                }
             }
     
             DB::commit();
@@ -136,14 +160,15 @@ class ProductController extends Controller
     public function export()
     {
         try {
-            $products = Product::with(['category', 'sizes', 'finishes'])->get();
+            $products = Product::with(['category', 'sizes', 'finishes', 'designs'])->get();
     
             $csv = Writer::createFromFileObject(new \SplTempFileObject());
-            $csv->insertOne(['Product ID', 'Name', 'Category', 'Sizes', 'Finishes']);
+            $csv->insertOne(['Product ID', 'Name', 'Category', 'Sizes', 'Finishes', 'Designs']);
     
             foreach ($products as $product) {
                 $sizeNames = $product->sizes->pluck('name')->implode(', ');
                 $finishNames = $product->finishes->pluck('name')->implode(', ');
+                $designNames = $product->designs->pluck('name')->implode(', ');
     
                 $csv->insertOne([
                     $product->id,
@@ -151,6 +176,7 @@ class ProductController extends Controller
                     $product->category->name ?? 'N/A',
                     $sizeNames ?: 'N/A',
                     $finishNames ?: 'N/A',
+                    $designNames ?: 'N/A',
                 ]);
             }
     

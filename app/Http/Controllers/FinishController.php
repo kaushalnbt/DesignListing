@@ -15,10 +15,18 @@ class FinishController extends Controller
         $this->apiResponse = $apiResponse;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $finishes = Finish::all();
+            $query = Finish::query();
+
+            if ($request->has('product_category_id')) {
+                $query->whereHas('productCategories', function ($q) use ($request) {
+                    $q->where('product_category_id', $request->input('product_category_id'));
+                });
+            }
+
+            $finishes = $query->get();
             return $this->apiResponse->sendResponse(200, "Finishes fetched successfully!", $finishes);
         } catch (\Exception $e) {
             return $this->apiResponse->sendResponse(500, $e->getMessage(), $e->getTraceAsString());
