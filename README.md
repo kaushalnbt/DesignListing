@@ -1,66 +1,179 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Design Listing
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Design Listing is a web application for managing and filtering products based on various attributes such as product categories, sizes, finishes, designs, structures, and colors. This application supports dynamic filtering, bulk import/export, and hierarchical relationships between categories.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Dynamic filtering based on selected attributes
+- Hierarchical product categories
+- Many-to-many relationships between products, sizes, finishes, and designs
+- Bulk import/export functionality
+- Admin panel for managing data
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Table of Contents
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Database Structure](#database-structure)
+- [Usage](#usage)
+- [API Endpoints](#api-endpoints)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/yourusername/design-listing.git
+    cd design-listing
+    ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2. Install dependencies:
+    ```sh
+    composer install
+    npm install
+    ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. Copy the example environment file and configure it:
+    ```sh
+    cp .env.example .env
+    ```
 
-## Laravel Sponsors
+4. Generate an application key:
+    ```sh
+    php artisan key:generate
+    ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+5. Run the database migrations:
+    ```sh
+    php artisan migrate
+    ```
 
-### Premium Partners
+6. Seed the database (optional):
+    ```sh
+    php artisan db:seed
+    ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+7. Start the development server:
+    ```sh
+    php artisan serve
+    ```
+
+## Configuration
+
+Configure the `.env` file with your database and other environment settings. Here are some key settings:
+
+- `DB_CONNECTION`: Database connection type (e.g., `mysql`)
+- `DB_HOST`: Database host
+- `DB_PORT`: Database port
+- `DB_DATABASE`: Database name
+- `DB_USERNAME`: Database username
+- `DB_PASSWORD`: Database password
+
+## Database Structure
+
+The database structure includes the following tables:
+
+- `product_categories`: Stores product categories with hierarchical relationships.
+- `products`: Stores product information.
+- `sizes`: Stores size information.
+- `finishes`: Stores finish information.
+- `designs`: Stores design information.
+- `structures`: Stores structure information.
+- `colors`: Stores color information.
+- Pivot tables for many-to-many relationships:
+  - `color_product_category`
+  - `finish_product_category`
+  - `finish_size`
+  - `product_size`
+  - `product_finish`
+  - `product_design`
+  - `design_size`
+  - `design_finish`
+
+## Usage
+
+### Admin Panel
+
+The admin panel allows you to manage product categories, products, sizes, finishes, designs, structures, and colors. You can access the admin panel at `/admin`.
+
+### Dynamic Filtering
+
+The application supports dynamic filtering based on selected attributes. For example, selecting a product category will update the available finishes, sizes, and other related attributes.
+
+### Bulk Import/Export
+
+You can import and export products in JSON or CSV format using the provided API endpoints.
+
+## API Endpoints
+
+### Products
+
+- `GET /api/products`: Fetch all products with optional filtering.
+- `POST /api/products`: Create a new product.
+- `GET /api/products/{id}`: Fetch a single product by ID.
+- `PUT /api/products/{id}`: Update a product by ID.
+- `DELETE /api/products/{id}`: Delete a product by ID.
+- `POST /api/products/import`: Import products from a JSON file.
+- `GET /api/products/export`: Export products to a CSV file.
+
+### Product Categories
+
+- `GET /api/product-categories`: Fetch all product categories with optional filtering.
+- `POST /api/product-categories`: Create a new product category.
+- `GET /api/product-categories/{id}`: Fetch a single product category by ID.
+- `PUT /api/product-categories/{id}`: Update a product category by ID.
+- `DELETE /api/product-categories/{id}`: Delete a product category by ID.
+
+### Sizes
+
+- `GET /api/sizes`: Fetch all sizes with optional filtering.
+- `POST /api/sizes`: Create a new size.
+- `GET /api/sizes/{id}`: Fetch a single size by ID.
+- `PUT /api/sizes/{id}`: Update a size by ID.
+- `DELETE /api/sizes/{id}`: Delete a size by ID.
+
+### Finishes
+
+- `GET /api/finishes`: Fetch all finishes with optional filtering.
+- `POST /api/finishes`: Create a new finish.
+- `GET /api/finishes/{id}`: Fetch a single finish by ID.
+- `PUT /api/finishes/{id}`: Update a finish by ID.
+- `DELETE /api/finishes/{id}`: Delete a finish by ID.
+
+### Designs
+
+- `GET /api/designs`: Fetch all designs with optional filtering.
+- `POST /api/designs`: Create a new design.
+- `GET /api/designs/{id}`: Fetch a single design by ID.
+- `PUT /api/designs/{id}`: Update a design by ID.
+- `DELETE /api/designs/{id}`: Delete a design by ID.
+
+### Structures
+
+- `GET /api/structures`: Fetch all structures with optional filtering.
+- `POST /api/structures`: Create a new structure.
+- `GET /api/structures/{id}`: Fetch a single structure by ID.
+- `PUT /api/structures/{id}`: Update a structure by ID.
+- `DELETE /api/structures/{id}`: Delete a structure by ID.
+
+### Colors
+
+- `GET /api/colors`: Fetch all colors with optional filtering.
+- `POST /api/colors`: Create a new color.
+- `GET /api/colors/{id}`: Fetch a single color by ID.
+- `PUT /api/colors/{id}`: Update a color by ID.
+- `DELETE /api/colors/{id}`: Delete a color by ID.
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Contributions are welcome! Please follow these steps to contribute:
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Commit your changes and push to your branch.
+4. Create a pull request with a detailed description of your changes.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
